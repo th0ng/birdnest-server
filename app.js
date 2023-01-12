@@ -35,6 +35,39 @@ function droneConstructor(
   this.pilotInformation = pilotInformation;
 }
 
+var dronesData = [];
+
+setInterval(async () => {
+  const newDronesData = await service.getDronesPosition();
+  for (drone in newDronesData) {
+    //Check if the position is in the no-fly zone
+    const distance = Math.hypot(
+      Math.abs(drone.children[8].value - 250000),
+      Math.abs(drone.children[7].value - 250000)
+    );
+    //Check if the distance is less than 100000
+    if (distance < 100000) {
+      const found = dronesData.find(
+        (obj) => obj.data.serialNumber === drone.children[0].value
+      );
+      const updatedClosestDistance =
+        distance < found.data.distance ? distance : found.data.closestDistance;
+    }
+    //Define the updated piece of data
+    const updatedDroneData = new droneConstructor(
+      found.data.serialNumber,
+      drone.children[8].value,
+      drone.children[7].value,
+      updatedClosestDistance,
+      found.data.pilotInformation
+    );
+    const updatedDrone = {
+      data: updatedDroneData,
+      time: Date.now(),
+    };
+  }
+}, 2000);
+
 app.get("/", async (req, res) => {
   res.send("Hello world! Welcome to th0ng's birdnest server!");
 });
