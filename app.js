@@ -75,7 +75,7 @@ setInterval(async () => {
 }, 2000);
 
 app.get("/", async (req, res) => {
-  res.send("Hello world! Welcome to th0ng's birdnest server!");
+  res.send("Hi there! Welcome to th0ng's birdnest server!");
 });
 
 app.get("/drones", (req, res) => {
