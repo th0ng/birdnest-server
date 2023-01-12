@@ -52,6 +52,7 @@ setInterval(async () => {
           data: updatedDroneData,
           time: Date.now(),
         };
+        dronesData[duplicateIndex] = updatedDrone;
       } else {
         service
           .getPilotInformation(drone.children[0].value)
