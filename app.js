@@ -5,6 +5,21 @@ const service = require("./services/service");
 const cors = require("cors");
 app.use(cors());
 
+const data = [
+  {
+    name: "test 1",
+    value: "test 1 value",
+  },
+  {
+    name: "test 2",
+    value: "test 2 value",
+  },
+  {
+    name: "test 3",
+    value: "test 3 value",
+  },
+];
+
 //constructor for drone data
 function droneConstructor(
   serialNumber,
@@ -20,4 +35,10 @@ function droneConstructor(
   this.pilotInformation = pilotInformation;
 }
 
-app.get("/", async (req, res) => {});
+app.get("/", async (req, res) => {
+  res.send("Hello world!");
+});
+
+app.get("/drones", (req, res) => {
+  res.json(data);
+});
