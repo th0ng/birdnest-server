@@ -5,21 +5,6 @@ const service = require("./services/service");
 const cors = require("cors");
 app.use(cors());
 
-const data = [
-  {
-    name: "test 1",
-    value: "test 1 value",
-  },
-  {
-    name: "test 2",
-    value: "test 2 value",
-  },
-  {
-    name: "test 3",
-    value: "test 3 value",
-  },
-];
-
 //constructor for drone data
 function droneConstructor(
   serialNumber,
@@ -47,24 +32,44 @@ setInterval(async () => {
     );
     //Check if the distance is less than 100000
     if (distance < 100000) {
-      const found = dronesData.find(
+      const duplicateIndex = dronesData.findIndex(
         (obj) => obj.data.serialNumber === drone.children[0].value
       );
-      const updatedClosestDistance =
-        distance < found.data.distance ? distance : found.data.closestDistance;
+      if (duplicateIndex !== -1) {
+        const updatedClosestDistance =
+          distance < found.data.distance
+            ? distance
+            : found.data.closestDistance;
+        //Define the updated piece of data
+        const updatedDroneData = new droneConstructor(
+          found.data.serialNumber,
+          drone.children[8].value,
+          drone.children[7].value,
+          updatedClosestDistance,
+          found.data.pilotInformation
+        );
+        const updatedDrone = {
+          data: updatedDroneData,
+          time: Date.now(),
+        };
+      } else {
+        service
+          .getPilotInformation(drone.children[0].value)
+          .then((pilotInformation) => {
+            const newViolatingDrone = {
+              data: new droneConstructor(
+                drone.children[0].value,
+                drone.children[8].value,
+                drone.children[7].value,
+                distance,
+                pilotInformation
+              ),
+              time: Date.now(),
+            };
+            dronesData.splice(0, 0, newViolatingDrone);
+          });
+      }
     }
-    //Define the updated piece of data
-    const updatedDroneData = new droneConstructor(
-      found.data.serialNumber,
-      drone.children[8].value,
-      drone.children[7].value,
-      updatedClosestDistance,
-      found.data.pilotInformation
-    );
-    const updatedDrone = {
-      data: updatedDroneData,
-      time: Date.now(),
-    };
   }
 }, 2000);
 
@@ -73,5 +78,5 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/drones", (req, res) => {
-  res.json(data);
+  res.json(dronesData);
 });
