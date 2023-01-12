@@ -36,7 +36,7 @@ function droneConstructor(
 }
 
 app.get("/", async (req, res) => {
-  res.send("Hello world!");
+  res.send("Hello world! Welcome to th0ng's birdnest server!");
 });
 
 app.get("/drones", (req, res) => {
